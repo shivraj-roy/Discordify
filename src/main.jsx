@@ -4,6 +4,9 @@ import { MantineProvider, createTheme } from "@mantine/core";
 import "./index.css";
 import "@mantine/core/styles.css";
 import App from "./App.jsx";
+import { inject } from "@vercel/analytics";
+
+inject();
 
 const theme = createTheme({
    fontFamily: "Dosis, sans-serif",
