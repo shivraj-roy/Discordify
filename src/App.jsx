@@ -1,11 +1,10 @@
 import "./App.css";
-import { Button } from "@mantine/core";
+import Header from "./components/Header";
 
 function App() {
    return (
       <>
-         <h1>Discordify</h1>
-         <Button variant="filled">Click me</Button>
+         <Header />
       </>
    );
 }
