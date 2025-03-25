@@ -47,6 +47,9 @@ const bgColors = {
 
 const TextEditor = () => {
    const [text, setText] = useState("");
+   const [copyButtonText, setCopyButtonText] = useState(
+      "Copy Text as Discord Formatted"
+   );
    const editorRef = useRef(null);
 
    const applyStyles = (style, colorKey = null) => {
@@ -135,25 +138,32 @@ const TextEditor = () => {
 
    const resetStyles = () => {
       const editor = editorRef.current;
-      // Get the text content without any HTML tags
-      const plainText = editor.innerText;
-      // Clear the editor
-      editor.innerHTML = "";
-      // Insert the plain text
-      editor.textContent = plainText;
-      // Update the state
+      const selection = window.getSelection();
+      const range = selection.getRangeAt(0);
+
+      if (range.collapsed) return; // No text selected
+
+      const selectedText = range.toString();
+      range.deleteContents();
+      range.insertNode(document.createTextNode(selectedText));
+
+      // Update the text state with HTML content
       setText(editor.innerHTML);
    };
 
    const copyToClipboard = () => {
       const toCopy = `\`\`\`ansi\n${getASCIFormattedText()}\`\`\``;
       navigator.clipboard.writeText(toCopy);
+      setCopyButtonText("Copied!");
+      setTimeout(() => {
+         setCopyButtonText("Copy Text as Discord Formatted");
+      }, 1500);
    };
 
    return (
       <div>
          <Center m={20}>
-            <Title order={3}>Text Editor</Title>
+            <Title order={4}>Create your own Discord message</Title>
          </Center>
 
          {/* Editor Buttons */}
@@ -170,6 +180,11 @@ const TextEditor = () => {
                   leftSection={<GrBold />}
                   variant="light"
                   onClick={() => applyStyles("bold")}
+                  style={{
+                     fontWeight: "bold",
+                     backgroundColor: "#4f545c",
+                     color: "#fff",
+                  }}
                >
                   Bold
                </Button>
@@ -177,6 +192,11 @@ const TextEditor = () => {
                   leftSection={<GrItalic />}
                   variant="light"
                   onClick={() => applyStyles("italic")}
+                  style={{
+                     fontStyle: "italic",
+                     backgroundColor: "#4f545c",
+                     color: "#fff",
+                  }}
                >
                   Italic
                </Button>
@@ -184,6 +204,11 @@ const TextEditor = () => {
                   leftSection={<GrUnderline />}
                   variant="light"
                   onClick={() => applyStyles("underline")}
+                  style={{
+                     textDecoration: "underline",
+                     backgroundColor: "#4f545c",
+                     color: "#fff",
+                  }}
                >
                   Underline
                </Button>
@@ -241,7 +266,9 @@ const TextEditor = () => {
             <div
                ref={editorRef}
                contentEditable
+               data-placeholder="Hope this got me selected, I tried my best..."
                style={{
+                  backgroundColor: "#2f3136",
                   minHeight: "200px",
                   padding: "10px",
                   border: "1px solid #ccc",
@@ -249,20 +276,47 @@ const TextEditor = () => {
                   outline: "none",
                   whiteSpace: "pre-wrap",
                   wordWrap: "break-word",
+                  position: "relative",
+                  fontSize: "16px",
                }}
                defaultValue={text}
                onInput={(e) => setText(e.currentTarget.innerHTML)}
+               onFocus={(e) => {
+                  if (e.currentTarget.innerHTML === "") {
+                     e.currentTarget.innerHTML = "";
+                  }
+               }}
+               onBlur={(e) => {
+                  if (e.currentTarget.innerHTML === "") {
+                     e.currentTarget.innerHTML = "";
+                  }
+               }}
             />
          </Container>
 
          {/* Button */}
          <Center mt={20}>
-            <Button leftSection={<GrClipboard />} onClick={copyToClipboard}>
-               Copy Text as Discord Formatted
+            <Button
+               leftSection={<GrClipboard />}
+               onClick={copyToClipboard}
+               disabled={!text.trim()}
+            >
+               {copyButtonText}
             </Button>
          </Center>
       </div>
    );
 };
+
+// Add CSS for placeholder
+const style = document.createElement("style");
+style.textContent = `
+   [contenteditable][data-placeholder]:empty:before {
+      content: attr(data-placeholder);
+      color: #666;
+      font-style: bold;
+   }
+`;
+document.head.appendChild(style);
 
 export default TextEditor;

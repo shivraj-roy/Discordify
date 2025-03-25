@@ -2,12 +2,11 @@ import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { MantineProvider, createTheme } from "@mantine/core";
 import "./index.css";
-import App from "./App.jsx";
 import "@mantine/core/styles.css";
+import App from "./App.jsx";
 
 const theme = createTheme({
-   // fontFamily: "Inter, sans-serif",
-   // defaultRadius: "md",
+   fontFamily: "Dosis, sans-serif",
 });
 
 createRoot(document.getElementById("root")).render(
